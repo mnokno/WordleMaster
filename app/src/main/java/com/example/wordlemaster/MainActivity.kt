@@ -12,14 +12,28 @@ import kotlinx.coroutines.*
 import kotlin.math.floor
 
 class MainActivity : AppCompatActivity() {
+
+    ///////////////////////
+    /// Class variables ///
+    ///////////////////////
+
+    private var wordleMaster: WordleMaster? = null
+
+    ////////////////////////////
+    /// Class initialization ///
+    ////////////////////////////
+
+    // Called when mainActivity is created
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        wordleMaster = WordleMaster(applicationContext)
         GlobalScope.launch(Dispatchers.Main) { genUI() }
 
     }
 
+    // Generates UI
     private suspend fun genUI(){
 
         // Gets screen size
@@ -69,7 +83,8 @@ class MainActivity : AppCompatActivity() {
                 button.layoutParams = layoutParams
 
                 // Sets button text
-                button.text = "${i * 5 + j}"
+                //button.text = "${i * 5 + j}"
+                button.text = "${wordleMaster?.Test()}"
 
                 // Sets on click event
                 button.setOnClickListener(View.OnClickListener {
