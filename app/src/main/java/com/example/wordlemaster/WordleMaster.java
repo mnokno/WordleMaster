@@ -1,10 +1,8 @@
 package com.example.wordlemaster;
 
-import java.io.File;
-import java.util.Dictionary;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 public class WordleMaster {
 
@@ -23,8 +21,9 @@ public class WordleMaster {
     // Populates allWordsDict
     private void popAllWordsDict(){
 
-        // File directories
-        
+        // Reads text files
+        InputStream inputStreamWords = getResources().openRawResource(R.raw.wordle_words);
+
     }
 
 }

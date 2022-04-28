@@ -15,7 +15,7 @@ def genFlatWordData():
     flattenedWords: List[str] = list()
     # Flatten all the letters e.g words -> dorsw
     for word in words:
-        flattenedWords.append(flatten(word[:-1]))
+        flattenedWords.append(flatten(word.replace('\n', '')))
 
     # Writes the flatted words to a file
     writeFilePath: str = os.path.dirname(readFilePath) + "\\wordle_words_flattened.txt"
