@@ -3,73 +3,107 @@ package com.example.wordlemaster
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.View
-import android.view.ViewGroup
+
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.marginLeft
-import androidx.core.view.setMargins
-import androidx.core.view.size
 import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.floor
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        genUI()
+
+        GlobalScope.launch(Dispatchers.Main) { genUI() }
 
     }
 
-    private fun genUI(){
+    private suspend fun genUI(){
 
         // Gets screen size
-        val constraintLayout = findViewById<LinearLayout>(R.id.mainStackPanel)
+        val mainLinearLayout = findViewById<LinearLayout>(R.id.mainStackPanel)
 
-        val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val linearLayoutPaddingLength: Int = floor(displayMetrics.widthPixels * 0.075).toInt()
-        val buttonSize: Int = floor(displayMetrics.widthPixels * 0.15).toInt()
-        val buttonPaddingLength: Int = floor(displayMetrics.widthPixels * 0.01).toInt()
+        // Waits for the mainLinearLayout to be laid out so that is has dimensions
+        while (!mainLinearLayout.isLaidOut) { delay(10L) }
+
+        // Calculates margins and square size
+        val linearLayoutPaddingDown: Int = floor(mainLinearLayout.width * 0.02).toInt()
+        var linearLayoutPaddingSideways: Int = 0
+        var buttonSize: Int = floor(mainLinearLayout.width * 0.18).toInt()
+        val buttonMargin: Int = floor(mainLinearLayout.width * 0.01).toInt()
+
+        // Camps max button size to ensure that 7 rows will fit on screen
+        if ((buttonSize * 7) > mainLinearLayout.height){
+            val oldButtonSize = buttonSize
+            buttonSize = floor((mainLinearLayout.height / 7.0) - 2).toInt()
+            linearLayoutPaddingSideways = floor((oldButtonSize - buttonSize) * 2.5).toInt()
+        }
 
         // Generates horizontal layouts for button
         for (i in 0 until 6){
 
-
+            // Creates horizontal layouts for button
             val linearLayout = LinearLayout(this)
-            linearLayout.layoutParams = LinearLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
-            linearLayout.setPadding(linearLayoutPaddingLength, buttonPaddingLength, linearLayoutPaddingLength, buttonPaddingLength)
+
+            // Sets layout parameters
+            val linearLayoutParams = LinearLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
+            linearLayout.setPadding(linearLayoutPaddingSideways, 0, linearLayoutPaddingSideways, linearLayoutPaddingDown)
+            linearLayout.layoutParams = linearLayoutParams
+
+            // Sets orientation
             linearLayout.orientation = LinearLayout.HORIZONTAL
-            constraintLayout.addView(linearLayout);
+            // Adds it to the main stack panel
+            mainLinearLayout.addView(linearLayout);
 
             // Generates buttons
             for (j in 0 until  5){
 
+                // Creates new button
                 val button = Button(this)
+
+                // Sets layout parameters
                 val layoutParams = LinearLayout.LayoutParams(buttonSize, buttonSize)
-                layoutParams.setMargins(buttonPaddingLength, 0, buttonPaddingLength, 0)
+                layoutParams.setMargins(buttonMargin, 0, buttonMargin, 0)
                 button.layoutParams = layoutParams
-                button.text = "${constraintLayout.width}"
+
+                // Sets button text
+                button.text = "${i * 5 + j}"
+
+                // Sets on click event
                 button.setOnClickListener(View.OnClickListener {
-                    button.text = button.text as String + '.'
+                    // TODO
                 })
+
+                // Sets buttons appearance
                 button.setBackgroundColor(Color.GREEN)
                 button.setTextColor(Color.RED)
+                //(button as ImageButton).setImageDrawable(R.drawable.button_frame)
 
+                // Adds this button to linearLayout
                 linearLayout.addView(button);
             }
         }
-    }
 
-    fun sendMessage(view: View) {
-        // Do something in response to button
-        (view as Button).text = "${findViewById<LinearLayout>(R.id.mainStackPanel).width}"
+        // Generates "suggest guess button"
+        val suggestButton = Button(this)
+        // Sets layout parameters
+        val suggestButtonLayoutParams = LinearLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, buttonSize)
+        suggestButtonLayoutParams.setMargins(linearLayoutPaddingSideways + buttonMargin, 0, linearLayoutPaddingSideways + buttonMargin, 0)
+        suggestButton.layoutParams = suggestButtonLayoutParams
+        // Sets buttons text
+        suggestButton.text = "Suggest guess"
+        // Sets on click event
+        suggestButton.setOnClickListener(View.OnClickListener {
+            // TODO
+        })
+        // Sets buttons appearance
+        suggestButton.setBackgroundColor(Color.GREEN)
+        suggestButton.setTextColor(Color.RED)
+        // Adds this button to linearLayout
+        mainLinearLayout.addView(suggestButton);
     }
-
 }
+
