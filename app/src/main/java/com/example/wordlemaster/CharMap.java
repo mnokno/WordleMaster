@@ -1,6 +1,6 @@
 package com.example.wordlemaster;
-
 import android.content.Context;
+import java.util.Arrays;
 
 public class CharMap {
 
@@ -47,5 +47,28 @@ public class CharMap {
     // Maps character to an index
     private int charToIndex(char c){
         return  (int)c - 97;
+    }
+
+    private char indexToChar(int index){
+        return (char)(index + 97);
+    }
+
+    //////////////////////////
+    /// Generic overwrites ///
+    //////////////////////////
+
+    @Override
+    public String toString() {
+
+        // Create empty string
+        StringBuilder formatted = new StringBuilder();
+
+        // Formats all the data stored in the map
+        for (int i = 0; i < 26; i++){
+            formatted.append(indexToChar(i)).append(" - ").append(map[i]).append("\n");
+        }
+
+        // Returns the formatted string
+        return formatted.toString().trim();
     }
 }
