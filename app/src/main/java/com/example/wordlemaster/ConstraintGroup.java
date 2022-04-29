@@ -15,6 +15,13 @@ public class ConstraintGroup {
     /// Class initialization ///
     ////////////////////////////
 
+    public ConstraintGroup(){
+        // Initiates lists
+        for (int i = 0; i < constraints.length; i++){
+            constraints[i] = new ArrayList<Constraint>();
+            addedConstraints[i] = new ArrayList<Constraint>();
+        }
+    }
 
     ///////////////////////
     /// Class utilities ///

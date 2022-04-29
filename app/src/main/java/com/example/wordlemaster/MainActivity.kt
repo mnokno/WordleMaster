@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     ///////////////////////
 
     private var wordleMaster: WordleMaster? = null
+    private var rows: Array<Array<Button?>?> = arrayOfNulls(6)
 
     ////////////////////////////
     /// Class initialization ///
@@ -27,6 +28,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        for(i in 0 until 6){
+            rows[i] = arrayOfNulls<Button>(5);
+        }
 
         wordleMaster = WordleMaster(applicationContext)
         GlobalScope.launch(Dispatchers.Main) { genUI() }

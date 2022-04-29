@@ -90,7 +90,7 @@ public class WordleMaster {
     public String recomendWord(){
 
         // Check weather the correct word has been found
-        if (possibleWords.length == 1){
+        if (possibleWords.length <= 2){
             return possibleWords[0];
         }
         else{
@@ -105,11 +105,11 @@ public class WordleMaster {
             String bestWord = null;
 
             // Find best word
-            for (int i = 0; i < possibleWords.length; i++){
-                int currentScore = scoreWord(possibleWords[i], charMap);
+            for (int i = 0; i < allWords.length; i++){
+                int currentScore = scoreWord(allWords[i], charMap);
                 if (currentScore > bestScore){
                     bestScore = currentScore;
-                    bestWord = possibleWords[i];
+                    bestWord = allWords[i];
                 }
             }
 
@@ -120,15 +120,57 @@ public class WordleMaster {
 
     // Retruns score for a word based on the suplied CharMap
     private int scoreWord(String word, CharMap charMap){
+
         // Creat initial score
         int score = 0;
+
+        // Gets constraints
+        Constraint[] inWordInCorrrectPlace = constraintGroup.getAllConstraints(ConstraintType.inWordCorrectPlace);
+        Constraint[] inWordWrongPlace = constraintGroup.getAllConstraints(ConstraintType.inWordWrongPlace);
+        Constraint[] notInWord = constraintGroup.getAllConstraints(ConstraintType.notInWord);
 
         // Scores the word
         String usedCharacters = "";
         for (int i = 0; i < word.length(); i++){
             if (usedCharacters.indexOf(word.charAt(i)) == -1){
-                score += charMap.get(word.charAt(i));
-                usedCharacters += word.charAt(i);
+
+                boolean isVlaid = true;
+                for (Constraint constraint: inWordInCorrrectPlace) {
+                    if (constraint.getConstraintChar() == word.charAt(i)){
+                        isVlaid = false;
+                        break;
+                    }
+                }
+                if (isVlaid){
+                    for (Constraint constraint: inWordWrongPlace) {
+                        if (constraint.getConstraintChar() == word.charAt(i)){
+                            if (constraint.getPosition() == i){
+                                isVlaid = false;
+                                break;
+                            }
+                            for (Constraint c: inWordInCorrrectPlace) {
+                                if (c.getPosition() == i){
+                                    isVlaid = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (isVlaid){
+                    for (Constraint constraint: notInWord) {
+                        if (constraint.getConstraintChar() == word.charAt(i)){
+                            isVlaid = false;
+                            break;
+                        }
+                    }
+                }
+
+
+                if (isVlaid){
+                    score += charMap.get(word.charAt(i));
+                    usedCharacters += word.charAt(i);
+                }
             }
         }
 
@@ -171,7 +213,10 @@ public class WordleMaster {
         }
 
         // Sets the valid words list as possible words
-        validWords.toArray(possibleWords);
+        String[] newPossibleWords = new String[validWords.size()];
+        validWords.toArray(newPossibleWords);
+        possibleWords = newPossibleWords;
+
     }
 
     // Return true if given word is valid withiin given constraints

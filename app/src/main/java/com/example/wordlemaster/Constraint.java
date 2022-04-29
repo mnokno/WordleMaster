@@ -7,12 +7,12 @@ public class Constraint {
     ///////////////////////
     private char constraintChar;
     private ConstraintType constraintType;
-    private byte position;
+    private int position;
 
     ////////////////////////////
     /// Class initialization ///
     ////////////////////////////
-    public Constraint(char constraintChar, ConstraintType constraintType, byte position){
+    public Constraint(char constraintChar, ConstraintType constraintType, int position){
         this.constraintChar = constraintChar;
         this.constraintType = constraintType;
         this.position = position;
@@ -29,7 +29,7 @@ public class Constraint {
         return constraintType;
     }
 
-    public byte getPosition(){
+    public int getPosition(){
         return position;
     }
 }
