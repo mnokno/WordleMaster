@@ -28,10 +28,6 @@ public class WordleMaster {
     public WordleMaster(Context context){
         this.context = context;
         popAllWordsArray();
-        for (int i = 0; i < 100; i++) {
-            System.out.println(".");
-        }
-        System.out.println(RecomendWord() + "..........................................");
     }
 
     ///////////////////////
@@ -90,24 +86,31 @@ public class WordleMaster {
 
     // Retruns recomended word to guess
     public String RecomendWord(){
-        // Calculates charmap
-        CharMap charMap = countLetters(possibleWords);
 
-        // Creats empty variables
-        int bestScore = -1;
-        String bestWord = null;
-
-        // Find best word
-        for (int i = 0; i < possibleWords.length; i++){
-            int currentScore = ScoreWord(possibleWords[i], charMap);
-            if (currentScore > bestScore){
-                bestScore = currentScore;
-                bestWord = possibleWords[i];
-            }
+        // Check weather the correct word has been found
+        if (possibleWords.length == 1){
+            return possibleWords[0];
         }
+        else{
+            // Calculates charmap
+            CharMap charMap = countLetters(possibleWords);
 
-        // Retrun best word
-        return bestWord;
+            // Creats empty variables
+            int bestScore = -1;
+            String bestWord = null;
+
+            // Find best word
+            for (int i = 0; i < possibleWords.length; i++){
+                int currentScore = ScoreWord(possibleWords[i], charMap);
+                if (currentScore > bestScore){
+                    bestScore = currentScore;
+                    bestWord = possibleWords[i];
+                }
+            }
+
+            // Retrun best word
+            return bestWord;
+        }
     }
 
     // Retruns score for a word based on the suplied CharMap
