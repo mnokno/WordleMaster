@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ public class WordleMaster {
     private Context context;
     private String[] allWords;
     private String[] possibleWords;
+    private ConstraintGroup constraintGroup = new ConstraintGroup();
 
     /////////////////////////
     /// Class constructor ///
@@ -85,13 +87,16 @@ public class WordleMaster {
     }
 
     // Retruns recomended word to guess
-    public String RecomendWord(){
+    public String recomendWord(){
 
         // Check weather the correct word has been found
         if (possibleWords.length == 1){
             return possibleWords[0];
         }
         else{
+            // Recalculates possible moves
+            recalculatePossibleWords();
+
             // Calculates charmap
             CharMap charMap = countLetters(possibleWords);
 
@@ -101,7 +106,7 @@ public class WordleMaster {
 
             // Find best word
             for (int i = 0; i < possibleWords.length; i++){
-                int currentScore = ScoreWord(possibleWords[i], charMap);
+                int currentScore = scoreWord(possibleWords[i], charMap);
                 if (currentScore > bestScore){
                     bestScore = currentScore;
                     bestWord = possibleWords[i];
@@ -114,7 +119,7 @@ public class WordleMaster {
     }
 
     // Retruns score for a word based on the suplied CharMap
-    private int ScoreWord(String word, CharMap charMap){
+    private int scoreWord(String word, CharMap charMap){
         // Creat initial score
         int score = 0;
 
@@ -131,9 +136,74 @@ public class WordleMaster {
         return score;
     }
 
-    // Test
-    public String Test(){
-        return "TEW";
+    // Adds constraints
+    public void addConstraints(Constraint[] constraints){
+        constraintGroup.addConstraints(constraints);
+    }
+
+    // Adds constraint
+    public void addConstraints(Constraint constraint){
+        addConstraints(new Constraint[]{constraint});
+    }
+
+    // Sets constraints
+    public void setConstraints(Constraint[] constraints){
+        constraintGroup.clear();
+        constraintGroup.addConstraints(constraints);
+    }
+
+    // Recalculates possible words based on the constraints
+    private void recalculatePossibleWords(){
+
+        // Creates a list for stroing valid words
+        ArrayList<String> validWords = new ArrayList<String>();
+
+        // Gets constraints
+        Constraint[] inWordInCorrrectPlace = constraintGroup.getAllConstraints(ConstraintType.inWordCorrectPlace);
+        Constraint[] inWordWrongPlace = constraintGroup.getAllConstraints(ConstraintType.inWordWrongPlace);
+        Constraint[] notInWord = constraintGroup.getAllConstraints(ConstraintType.notInWord);
+
+        // Adds valid words to the validWords list
+        for (String word: possibleWords) {
+            if (isValid(word, inWordInCorrrectPlace, inWordWrongPlace, notInWord)){
+                validWords.add(word);
+            }
+        }
+
+        // Sets the valid words list as possible words
+        validWords.toArray(possibleWords);
+    }
+
+    // Return true if given word is valid withiin given constraints
+    private boolean isValid(String word, Constraint[] inWordInCorrrectPlace, Constraint[] inWordWrongPlace, Constraint[] notInWord){
+
+        // For letter in specific place constraint
+        for (Constraint constraint: inWordInCorrrectPlace) {
+            if (word.charAt(constraint.getPosition()) != constraint.getConstraintChar()){
+                return false;
+            }
+        }
+
+        // For letter in a word but in a wrong place
+        for (Constraint constraint: inWordWrongPlace) {
+            int index = word.indexOf(constraint.getConstraintChar());
+            if (index == -1){
+                return false;
+            }
+            else if (index == constraint.getPosition()){
+                return false;
+            }
+        }
+
+        // Letter not in a word
+        for (Constraint constraint: notInWord) {
+            if (word.indexOf(constraint.getConstraintChar()) != -1){
+                return false;
+            }
+        }
+
+        // Word is vlaid, return true
+        return true;
     }
 
 }

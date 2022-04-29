@@ -33,21 +33,21 @@ public class ConstraintGroup {
     }
 
     // Adds a list of constraints to the ConstraintGroup
-    public void addConstraint(Iterable<Constraint> iterable){
+    public void addConstraints(Constraint[] toAdd){
         // Clears addedConstraints
         for (int i = 0; i < addedConstraints.length; i++){
             addedConstraints[i].clear();
         }
 
         // Adds constraints
-        for (Constraint constraint : iterable) {
+        for (Constraint constraint : toAdd) {
             constraints[constraint.getConstraintType().ordinal()].add(constraint);
             addedConstraints[constraint.getConstraintType().ordinal()].add(constraint);
         }
     }
 
     // Clears the ConstraintGroup
-    public void Clear(){
+    public void clear(){
         // Clears addedConstraints
         for (int i = 0; i < constraints.length; i++){
             constraints[i].clear();

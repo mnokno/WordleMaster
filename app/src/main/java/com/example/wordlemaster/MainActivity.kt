@@ -83,8 +83,7 @@ class MainActivity : AppCompatActivity() {
                 button.layoutParams = layoutParams
 
                 // Sets button text
-                //button.text = "${i * 5 + j}"
-                button.text = "${wordleMaster?.Test()}"
+                button.text = "${i * 5 + j}"
 
                 // Sets on click event
                 button.setOnClickListener(View.OnClickListener {
@@ -111,13 +110,22 @@ class MainActivity : AppCompatActivity() {
         suggestButton.text = "Suggest guess"
         // Sets on click event
         suggestButton.setOnClickListener(View.OnClickListener {
-            // TODO
+            recommendMoveButton(suggestButton);
         })
         // Sets buttons appearance
         suggestButton.setBackgroundColor(Color.GREEN)
         suggestButton.setTextColor(Color.RED)
         // Adds this button to linearLayout
         mainLinearLayout.addView(suggestButton);
+    }
+
+    //////////////////////
+    /// Event handling ///
+    //////////////////////
+
+    // Recommends a move
+    private fun recommendMoveButton(view: View?){
+        (view as Button).text = wordleMaster?.recomendWord();
     }
 }
 
