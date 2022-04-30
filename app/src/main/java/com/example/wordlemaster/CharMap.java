@@ -49,8 +49,22 @@ public class CharMap {
         return  (int)c - 97;
     }
 
+    // Maps index to a character
     private char indexToChar(int index){
         return (char)(index + 97);
+    }
+
+    // Clamps this char map to a given set size
+    public void clampSet(int setSize){
+        // Claculates midpoint
+        int midPoint = (int)Math.floor(setSize / 2);
+
+        // Clamps each character
+        for (int i = 0; i < map.length; i++){
+            if (map[i] > midPoint){
+                map[i] = midPoint - map[i];
+            }
+        }
     }
 
     //////////////////////////

@@ -99,6 +99,8 @@ public class WordleMaster {
 
             // Calculates charmap
             CharMap charMap = countLetters(possibleWords);
+            // Clamps the charm map
+            charMap.clampSet(possibleWords.length);
 
             // Creats empty variables
             int bestScore = -1;
