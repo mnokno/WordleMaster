@@ -92,12 +92,13 @@ class MainActivity : AppCompatActivity() {
 
                 // Sets on click event
                 button.setOnClickListener(View.OnClickListener {
-                    // TODO
+                    //TODO
+                    button.setBackgroundColor(Color.YELLOW)
                 })
 
                 // Sets buttons appearance
-                button.setBackgroundColor(Color.GREEN)
-                button.setTextColor(Color.RED)
+                button.setBackgroundColor(Color.GRAY)
+                button.setTextColor(Color.WHITE)
                 //(button as ImageButton).setImageDrawable(R.drawable.button_frame)
 
                 // Adds this button to linearLayout
@@ -118,8 +119,8 @@ class MainActivity : AppCompatActivity() {
             recommendMoveButton(suggestButton);
         })
         // Sets buttons appearance
-        suggestButton.setBackgroundColor(Color.GREEN)
-        suggestButton.setTextColor(Color.RED)
+        suggestButton.setBackgroundColor(Color.GRAY)
+        suggestButton.setTextColor(Color.WHITE)
         // Adds this button to linearLayout
         mainLinearLayout.addView(suggestButton);
     }
