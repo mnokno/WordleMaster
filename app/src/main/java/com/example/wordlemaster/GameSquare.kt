@@ -28,15 +28,15 @@ class GameSquare(private val button: Button) {
         when (constraintType) {
             ConstraintType.notInWord -> {
                 constraintType = ConstraintType.inWordWrongPlace
-                button.setBackgroundColor(Color.YELLOW)
+                button.setBackgroundColor(Color.rgb(201, 180, 88))
             }
             ConstraintType.inWordWrongPlace -> {
                 constraintType = ConstraintType.inWordCorrectPlace
-                button.setBackgroundColor(Color.GREEN)
+                button.setBackgroundColor(Color.rgb(106, 170, 100))
             }
             else -> {
                 constraintType = ConstraintType.notInWord
-                button.setBackgroundColor(Color.GRAY)
+                button.setBackgroundColor(Color.rgb(120, 124, 126))
             }
         }
     }

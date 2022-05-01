@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                 })
 
                 // Sets buttons appearance
-                button.setBackgroundColor(Color.GRAY)
+                button.setBackgroundColor(Color.rgb(120, 124, 126))
                 button.setTextColor(Color.WHITE)
 
                 // Adds this button to reference array
@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
             recommendMoveButton(suggestButton);
         })
         // Sets buttons appearance
-        suggestButton.setBackgroundColor(Color.GRAY)
+        suggestButton.setBackgroundColor(Color.rgb(120, 124, 126))
         suggestButton.setTextColor(Color.WHITE)
         // Adds this button to linearLayout
         mainLinearLayout.addView(suggestButton);
