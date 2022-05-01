@@ -89,6 +89,15 @@ public class WordleMaster {
     // Retruns recomended word to guess
     public String recomendWord(){
 
+        // Prints list of possible words
+        //TODO
+        System.out.println("............................");
+        for (String word: possibleWords) {
+            System.out.println(word);
+        }
+        System.out.println("Total words: " + possibleWords.length);
+        System.out.println("............................");
+
         // Recalculates possible moves
         recalculatePossibleWords();
 
@@ -115,14 +124,6 @@ public class WordleMaster {
                 }
             }
 
-            // Prints list of possible words
-            //TODO
-            System.out.println("............................");
-            for (String word: possibleWords) {
-                System.out.println(word);
-            }
-            System.out.println("Total words: " + possibleWords.length);
-            System.out.println("............................");
             // Retrun best word
             return bestWord;
         }

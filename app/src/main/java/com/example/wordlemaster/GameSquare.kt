@@ -16,7 +16,7 @@ class GameSquare(private val button: Button) {
     var char: Char
         get() = charValue
         set(charValue) {
-            button.text = charValue.toString()
+            button.text = charValue.toString().uppercase()
             this.charValue = charValue
         }
 

@@ -1,15 +1,22 @@
 package com.example.wordlemaster
 
+import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.View
 
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
 import kotlinx.coroutines.*
 import kotlin.math.floor
+import kotlin.math.sqrt
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,10 +61,10 @@ class MainActivity : AppCompatActivity() {
         var buttonSize: Int = floor(mainLinearLayout.width * 0.18).toInt()
         val buttonMargin: Int = floor(mainLinearLayout.width * 0.01).toInt()
 
-        // Camps max button size to ensure that 7 rows will fit on screen
+        // Caps max button size to ensure that 7 rows will fit on screen
         if (((buttonSize + linearLayoutPaddingDown) * 7) > mainLinearLayout.height){
             val oldButtonSize = buttonSize
-            buttonSize = floor((mainLinearLayout.height / 7.0) - 2).toInt()
+            buttonSize = floor((mainLinearLayout.height / 7.0) - 4).toInt()
             linearLayoutPaddingSideways = floor((oldButtonSize - buttonSize) * 2.5).toInt()
         }
 
@@ -98,6 +105,12 @@ class MainActivity : AppCompatActivity() {
                 // Sets buttons appearance
                 button.setBackgroundColor(Color.rgb(120, 124, 126))
                 button.setTextColor(Color.WHITE)
+                // Sets font
+                button.setTypeface(ResourcesCompat.getFont(this, R.font.roboto_bold), Typeface.BOLD)
+                // Sets font size
+                button.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sqrt(buttonSize.toFloat() * 8))
+                // Sets gravity
+                button.gravity = Gravity.CENTER
 
                 // Adds this button to reference array
                 rows[i]?.set(j, GameSquare(button));
@@ -118,12 +131,18 @@ class MainActivity : AppCompatActivity() {
         // Sets buttons text
         suggestButton.text = "Recommend guess"
         // Sets on click event
-        suggestButton.setOnClickListener(View.OnClickListener {
+        suggestButton.setOnClickListener {
             recommendMoveButton(suggestButton);
-        })
+        }
         // Sets buttons appearance
         suggestButton.setBackgroundColor(Color.rgb(120, 124, 126))
         suggestButton.setTextColor(Color.WHITE)
+        // Sets font
+        suggestButton.setTypeface(ResourcesCompat.getFont(this, R.font.roboto_bold), Typeface.BOLD)
+        // Sets font size
+        suggestButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, sqrt(buttonSize.toFloat() * 8))
+        // Sets gravity
+        suggestButton.gravity = Gravity.CENTER
         // Adds this button to linearLayout
         mainLinearLayout.addView(suggestButton);
 
