@@ -89,14 +89,14 @@ public class WordleMaster {
     // Retruns recomended word to guess
     public String recomendWord(){
 
+        // Recalculates possible moves
+        recalculatePossibleWords();
+
         // Check weather the correct word has been found
         if (possibleWords.length <= 2){
             return possibleWords[0];
         }
         else{
-            // Recalculates possible moves
-            recalculatePossibleWords();
-
             // Calculates charmap
             CharMap charMap = countLetters(possibleWords);
             // Clamps the charm map
@@ -115,6 +115,14 @@ public class WordleMaster {
                 }
             }
 
+            // Prints list of possible words
+            //TODO
+            System.out.println("............................");
+            for (String word: possibleWords) {
+                System.out.println(word);
+            }
+            System.out.println("Total words: " + possibleWords.length);
+            System.out.println("............................");
             // Retrun best word
             return bestWord;
         }
