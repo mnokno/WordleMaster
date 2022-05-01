@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         val buttonMargin: Int = floor(mainLinearLayout.width * 0.01).toInt()
 
         // Camps max button size to ensure that 7 rows will fit on screen
-        if ((buttonSize * 7) > mainLinearLayout.height){
+        if (((buttonSize + linearLayoutPaddingDown) * 7) > mainLinearLayout.height){
             val oldButtonSize = buttonSize
             buttonSize = floor((mainLinearLayout.height / 7.0) - 2).toInt()
             linearLayoutPaddingSideways = floor((oldButtonSize - buttonSize) * 2.5).toInt()
@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         // Generates "suggest guess button"
         val suggestButton = Button(this)
         // Sets layout parameters
-        val suggestButtonLayoutParams = LinearLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, buttonSize)
+        val suggestButtonLayoutParams = LinearLayout.LayoutParams(buttonSize*5 + buttonMargin*8, buttonSize)
         suggestButtonLayoutParams.setMargins(linearLayoutPaddingSideways + buttonMargin, 0, linearLayoutPaddingSideways + buttonMargin, 0)
         suggestButton.layoutParams = suggestButtonLayoutParams
         // Sets buttons text
@@ -126,6 +126,8 @@ class MainActivity : AppCompatActivity() {
         suggestButton.setTextColor(Color.WHITE)
         // Adds this button to linearLayout
         mainLinearLayout.addView(suggestButton);
+
+        //supportActionBar?.hide()
     }
 
     //////////////////////
