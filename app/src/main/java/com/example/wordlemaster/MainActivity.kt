@@ -18,7 +18,8 @@ class MainActivity : AppCompatActivity() {
     ///////////////////////
 
     private var wordleMaster: WordleMaster? = null
-    private var rows: Array<Array<Button?>?> = arrayOfNulls(6)
+    private var rows: Array<Array<GameSquare?>?> = arrayOfNulls(6)
+    private var currentRow: Int = -1;
 
     ////////////////////////////
     /// Class initialization ///
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         for(i in 0 until 6){
-            rows[i] = arrayOfNulls<Button>(5);
+            rows[i] = arrayOfNulls<GameSquare>(5);
         }
 
         wordleMaster = WordleMaster(applicationContext)
@@ -87,22 +88,24 @@ class MainActivity : AppCompatActivity() {
                 layoutParams.setMargins(buttonMargin, 0, buttonMargin, 0)
                 button.layoutParams = layoutParams
 
-                // Sets button text
-                button.text = "${i * 5 + j}"
-
                 // Sets on click event
                 button.setOnClickListener(View.OnClickListener {
-                    //TODO
-                    button.setBackgroundColor(Color.YELLOW)
+                    if (currentRow == i){
+                        rows[i]?.get(j)?.nextConstraint()
+                    }
                 })
 
                 // Sets buttons appearance
                 button.setBackgroundColor(Color.GRAY)
                 button.setTextColor(Color.WHITE)
-                //(button as ImageButton).setImageDrawable(R.drawable.button_frame)
+
+                // Adds this button to reference array
+                rows[i]?.set(j, GameSquare(button));
+                rows[i]?.get(j)?.char = ' ';
 
                 // Adds this button to linearLayout
                 linearLayout.addView(button);
+
             }
         }
 
@@ -113,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         suggestButtonLayoutParams.setMargins(linearLayoutPaddingSideways + buttonMargin, 0, linearLayoutPaddingSideways + buttonMargin, 0)
         suggestButton.layoutParams = suggestButtonLayoutParams
         // Sets buttons text
-        suggestButton.text = "Suggest guess"
+        suggestButton.text = "Recommend guess"
         // Sets on click event
         suggestButton.setOnClickListener(View.OnClickListener {
             recommendMoveButton(suggestButton);
@@ -131,7 +134,26 @@ class MainActivity : AppCompatActivity() {
 
     // Recommends a move
     private fun recommendMoveButton(view: View?){
-        (view as Button).text = wordleMaster?.recomendWord();
+        // Ensures that a user is not out of rows
+        if (currentRow < 5){
+
+            // Reads constraints if there are any to read
+            if (currentRow != -1){
+                for (i in 0 until rows[currentRow]?.size!!){
+                    val gameSquare: GameSquare = rows[currentRow]?.get(i)!!;
+                    wordleMaster!!.addConstraints(Constraint(gameSquare.char, gameSquare.constraintType, i))
+                }
+            }
+
+            // Updates current row
+            currentRow++
+            // Get recommended word
+            val word: String = wordleMaster!!.recomendWord()
+            // Displays recommended word
+            for (i in 0 until rows[currentRow]?.size!!){
+                rows[currentRow]?.get(i)!!.char = word[i];
+            }
+        }
     }
 }
 
