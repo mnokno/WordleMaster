@@ -1,7 +1,8 @@
-package com.example.wordlemaster;
+package ai;
 
 import android.content.Context;
-
+import androidx.annotation.NonNull;
+import com.example.wordlemaster.R;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +25,7 @@ public class WordleMaster {
     /////////////////////////
 
     // Constructoro
-    public WordleMaster(Context context){
+    public WordleMaster(@NonNull Context context){
         this.context = context;
         popAllWordsArray();
     }
@@ -49,7 +50,8 @@ public class WordleMaster {
     }
 
     // Converts an input stream to a string (reads the stream)
-    private String readInputStream(InputStream inputStream) {
+    @NonNull
+    private String readInputStream(@NonNull InputStream inputStream) {
         try{
             ByteArrayOutputStream result = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
@@ -64,36 +66,29 @@ public class WordleMaster {
         }
     }
 
-    // Counts accurance of each letter in suplided list of words, words most be flattend, ducilated letters in a word are't coutned
-    private CharMap countLetters(String[] words){
-        // Creates an empty hash map
-        CharMap charMap = new CharMap();
-
-        // Calculates the char map
-        for (int i = 0; i < words.length; i++){
-            String usedCharacters = "";
-            for (int j = 0; j < 5; j++){
-                if (usedCharacters.indexOf(words[i].charAt(j)) == -1){
-                    charMap.update(words[i].charAt(j));
-                    usedCharacters += words[i].charAt(j);
-                }
-            }
-        }
-        // Returns the hash map
-        return  charMap;
+    // Adds constraints
+    public void addConstraints(@NonNull Constraint[] constraints){
+        currentConstraintGroup.addConstraints(constraints);
     }
 
-    // Retruns recomended word to guess
-    public String recomendWord(){
+    // Adds constraint
+    public void addConstraints(@NonNull Constraint constraint){
+        addConstraints(new Constraint[]{constraint});
+    }
 
-        // Prints list of possible words
-        //TODO
-        System.out.println("............................");
-        for (String word: currentPossibleWords) {
-            System.out.println(word);
-        }
-        System.out.println("Total words: " + currentPossibleWords.length);
-        System.out.println("............................");
+    // Sets constraints
+    public void setConstraints(@NonNull Constraint[] constraints){
+        currentConstraintGroup.clear();
+        currentConstraintGroup.addConstraints(constraints);
+    }
+
+    ///////////////////////////////
+    /// Class solving utilities ///
+    ///////////////////////////////
+
+    // Retruns recomended word to guess
+    @NonNull
+    public String recomendWord(@NonNull SearchType searchType){
 
         // Recalculates possible moves
         currentPossibleWords = calculatePossibleWords(currentPossibleWords, currentConstraintGroup);
@@ -103,47 +98,18 @@ public class WordleMaster {
             return currentPossibleWords[0];
         }
         else{
-            // Calculates charmap
-            CharMap charMap = countLetters(currentPossibleWords);
-            // Clamps the charm map
-            charMap.clampSet(currentPossibleWords.length);
-
-            // Creats empty variables
-            int bestScore = -1;
-            String bestWord = null;
-
-            // Find best word
-            for (int i = 0; i < allWords.length; i++){
-                int currentScore = scoreWord(allWords[i], charMap, currentConstraintGroup);
-                if (currentScore > bestScore){
-                    bestScore = currentScore;
-                    bestWord = allWords[i];
-                }
+            if (searchType == SearchType.fastApproximation){
+                return approximateBestWord(currentPossibleWords, currentConstraintGroup);
             }
-
-            // Retrun best word
-            return bestWord;
+            else{
+                return findBestWord();
+            }
         }
     }
 
-    // Adds constraints
-    public void addConstraints(Constraint[] constraints){
-        currentConstraintGroup.addConstraints(constraints);
-    }
-
-    // Adds constraint
-    public void addConstraints(Constraint constraint){
-        addConstraints(new Constraint[]{constraint});
-    }
-
-    // Sets constraints
-    public void setConstraints(Constraint[] constraints){
-        currentConstraintGroup.clear();
-        currentConstraintGroup.addConstraints(constraints);
-    }
-
     // Calculates possible words based on the constraints
-    private String[] calculatePossibleWords(String[] possibleWords, ConstraintGroup constraintGroup){
+    @NonNull
+    private String[] calculatePossibleWords(@NonNull String[] possibleWords, @NonNull ConstraintGroup constraintGroup){
 
         // Creates a list for stroing valid words
         ArrayList<String> validWords = new ArrayList<String>();
@@ -167,7 +133,8 @@ public class WordleMaster {
     }
 
     // Calculates possible words based on the constraint
-    private String[] calculatePossibleWords(String[] possibleWords, Constraint constraint){
+    @NonNull
+    private String[] calculatePossibleWords(@NonNull String[] possibleWords, @NonNull Constraint constraint){
         // Creats new constraint group
         ConstraintGroup constraintGroup = new ConstraintGroup();
         constraintGroup.addConstraint(constraint);
@@ -176,7 +143,8 @@ public class WordleMaster {
     }
 
     // Return true if given word is valid withiin given constraints
-    private boolean isValid(String word, Constraint[] inWordInCorrrectPlace, Constraint[] inWordWrongPlace, Constraint[] notInWord){
+    @NonNull
+    private boolean isValid(@NonNull String word, @NonNull Constraint[] inWordInCorrrectPlace, @NonNull Constraint[] inWordWrongPlace, @NonNull Constraint[] notInWord){
 
         // For letter in specific place constraint
         for (Constraint constraint: inWordInCorrrectPlace) {
@@ -207,12 +175,38 @@ public class WordleMaster {
         return true;
     }
 
-    ///////////////////////////////
-    /// Class solving utilities ///
-    ///////////////////////////////
+    ////////////////////////////////
+    /// Fast aproximation seatch ///
+    ////////////////////////////////
+
+    // Returns best word using fast aroximation search
+    @NonNull
+    private String approximateBestWord(@NonNull String[] possibleWords, @NonNull ConstraintGroup constraintGroup){
+        // Calculates charmap
+        CharMap charMap = countLetters(possibleWords);
+        // Clamps the charm map
+        charMap.clampSet(possibleWords.length);
+
+        // Creats empty variables
+        int bestScore = -1;
+        String bestWord = null;
+
+        // Find best word
+        for (int i = 0; i < allWords.length; i++){
+            int currentScore = scoreWord(allWords[i], charMap, constraintGroup);
+            if (currentScore > bestScore){
+                bestScore = currentScore;
+                bestWord = allWords[i];
+            }
+        }
+
+        // Retrun best word
+        return bestWord;
+    }
 
     // Retruns score for a word based on the suplied CharMap
-    private int scoreWord(String word, CharMap charMap, ConstraintGroup constraintGroup){
+    @NonNull
+    private int scoreWord(@NonNull String word, @NonNull CharMap charMap, @NonNull ConstraintGroup constraintGroup){
 
         // Creat initial score
         int score = 0;
@@ -271,11 +265,59 @@ public class WordleMaster {
         return score;
     }
 
-    // Returns a socre for a word using a precise technique, takes much longer then quick approximation technique
-    private float scoreWord(String word, String[] possibleWords, int currentPos){
+    // Counts accurance of each letter in suplided list of words, words most be flattend, ducilated letters in a word are't coutned
+    @NonNull
+    private CharMap countLetters(@NonNull String[] words){
+        // Creates an empty hash map
+        CharMap charMap = new CharMap();
 
-        // Creats initial score
-        float score = 0;
+        // Calculates the char map
+        for (int i = 0; i < words.length; i++){
+            String usedCharacters = "";
+            for (int j = 0; j < 5; j++){
+                if (usedCharacters.indexOf(words[i].charAt(j)) == -1){
+                    charMap.update(words[i].charAt(j));
+                    usedCharacters += words[i].charAt(j);
+                }
+            }
+        }
+        // Returns the hash map
+        return  charMap;
+    }
+
+    //////////////////////////
+    /// Slow exact seatch ///
+    /////////////////////////
+
+    // Finds best words using eaxt search
+    @NonNull
+    private String findBestWord(){
+
+        // Initall best word, and initilal best score
+        String bestWord = null;
+        float bestScore = Float.MAX_VALUE;
+
+        // Find best word
+        int count = 0;
+        int total = allWords.length;
+        for (String word: allWords) {
+            float socre = scoreWord(word, currentPossibleWords, 0);
+            if (socre < bestScore){
+                bestScore = socre;
+                bestWord = word;
+            }
+
+            count++;
+            System.out.println(String.format("%.5g%n", count * 100f / (float)total).trim() + "%" + " : " + count + "/" + total + " --- " + word + " : AR : " + socre);
+        }
+
+        // Returns best word
+        return bestWord;
+    }
+
+    // Returns a socre for a word using a precise technique, takes much longer then quick approximation technique
+    @NonNull
+    private float scoreWord(@NonNull String word, @NonNull String[] possibleWords, @NonNull int currentPos){
 
         // Checks if there are any possible words
         if (possibleWords.length == 0){
@@ -300,34 +342,5 @@ public class WordleMaster {
                     ((float) (scoreWord(word, sets[1], currentPos + 1)) * (float) sets[1].length / (float) possibleWords.length) +
                     ((float) (scoreWord(word, sets[2], currentPos + 1)) * (float) sets[2].length / (float) possibleWords.length);
         }
-    }
-
-    public String test(){
-        
-        // Initall best word, and initilal best score
-        String bestWord = "somthing went wrong!!!";
-        float bestScore = Float.MAX_VALUE;
-
-
-        // Find best word
-        int count = 0;
-        int total = allWords.length;
-        for (String word: allWords) {
-            float socre = scoreWord(word, currentPossibleWords, 0);
-            if (socre < bestScore){
-                bestScore = socre;
-                bestWord = word;
-            }
-
-            count++;
-            System.out.println((count * 100f / (float)total) + "%" + " : " + count + "/" + total);
-        }
-
-        // Returns best word
-        for (String word: currentPossibleWords) {
-            System.out.println(word);
-        }
-        System.out.println(bestScore);
-        return bestWord;
     }
 }

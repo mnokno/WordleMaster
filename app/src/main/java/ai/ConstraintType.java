@@ -1,4 +1,4 @@
-package com.example.wordlemaster;
+package ai;
 
 public enum ConstraintType {
     inWordWrongPlace,

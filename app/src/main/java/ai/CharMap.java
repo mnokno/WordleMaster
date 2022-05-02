@@ -1,5 +1,7 @@
-package com.example.wordlemaster;
+package ai;
+
 import android.content.Context;
+import androidx.annotation.NonNull;
 import java.util.Arrays;
 
 public class CharMap {
@@ -30,32 +32,35 @@ public class CharMap {
     ///////////////////////
 
     // Used to get value from map
-    public int get(char c){
+    @NonNull
+    public int get(@NonNull char c){
         return map[charToIndex(c)];
     }
 
     // Used to update value mapped to given character by 1
-    public void update(char c){
+    public void update(@NonNull char c){
         map[charToIndex(c)]++;
     }
 
     // Used to update value mapped to given character by val
-    public void update(char c, int val){
+    public void update(@NonNull char c, @NonNull int val){
         map[charToIndex(c)] += val;
     }
 
     // Maps character to an index
-    private int charToIndex(char c){
+    @NonNull
+    private int charToIndex(@NonNull char c){
         return  (int)c - 97;
     }
 
     // Maps index to a character
-    private char indexToChar(int index){
+    @NonNull
+    private char indexToChar(@NonNull int index){
         return (char)(index + 97);
     }
 
     // Clamps this char map to a given set size
-    public void clampSet(int setSize){
+    public void clampSet(@NonNull int setSize){
         // Claculates midpoint
         int midPoint = (int)Math.floor(setSize / 2);
 
@@ -72,6 +77,7 @@ public class CharMap {
     //////////////////////////
 
     @Override
+    @NonNull
     public String toString() {
 
         // Create empty string

@@ -1,4 +1,6 @@
-package com.example.wordlemaster;
+package ai;
+
+import androidx.annotation.NonNull;
 
 public class Constraint {
 
@@ -12,7 +14,7 @@ public class Constraint {
     ////////////////////////////
     /// Class initialization ///
     ////////////////////////////
-    public Constraint(char constraintChar, ConstraintType constraintType, int position){
+    public Constraint(@NonNull char constraintChar, @NonNull ConstraintType constraintType, @NonNull int position){
         this.constraintChar = constraintChar;
         this.constraintType = constraintType;
         this.position = position;
@@ -21,14 +23,17 @@ public class Constraint {
     ///////////////////////
     /// Class utilities ///
     ///////////////////////
+    @NonNull
     public char getConstraintChar(){
         return constraintChar;
     }
 
+    @NonNull
     public ConstraintType getConstraintType(){
         return constraintType;
     }
 
+    @NonNull
     public int getPosition(){
         return position;
     }

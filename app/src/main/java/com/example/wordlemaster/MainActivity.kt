@@ -1,6 +1,8 @@
 package com.example.wordlemaster
 
-import android.content.res.Resources
+import ai.Constraint
+import ai.SearchType
+import ai.WordleMaster
 import android.graphics.Color
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +13,6 @@ import android.view.View
 
 import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import kotlinx.coroutines.*
@@ -155,8 +156,6 @@ class MainActivity : AppCompatActivity() {
 
     // Recommends a move
     private fun recommendMoveButton(view: View?){
-        (view as Button).text = wordleMaster?.test();
-        return;
         // Ensures that a user is not out of rows
         if (currentRow < 5){
 
@@ -164,14 +163,20 @@ class MainActivity : AppCompatActivity() {
             if (currentRow != -1){
                 for (i in 0 until rows[currentRow]?.size!!){
                     val gameSquare: GameSquare = rows[currentRow]?.get(i)!!;
-                    wordleMaster!!.addConstraints(Constraint(gameSquare.char, gameSquare.constraintType, i))
+                    wordleMaster!!.addConstraints(
+                        Constraint(
+                            gameSquare.char,
+                            gameSquare.constraintType,
+                            i
+                        )
+                    )
                 }
             }
 
             // Updates current row
             currentRow++
             // Get recommended word
-            val word: String = wordleMaster!!.recomendWord()
+            val word: String = wordleMaster!!.recomendWord(SearchType.slowExact)
             // Displays recommended word
             for (i in 0 until rows[currentRow]?.size!!){
                 rows[currentRow]?.get(i)!!.char = word[i];
