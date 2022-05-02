@@ -155,6 +155,8 @@ class MainActivity : AppCompatActivity() {
 
     // Recommends a move
     private fun recommendMoveButton(view: View?){
+        (view as Button).text = wordleMaster?.test();
+        return;
         // Ensures that a user is not out of rows
         if (currentRow < 5){
 
