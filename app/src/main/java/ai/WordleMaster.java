@@ -102,7 +102,13 @@ public class WordleMaster {
                 return approximateBestWord(currentPossibleWords, currentConstraintGroup);
             }
             else{
-                return findBestWord();
+                if (currentPossibleWords.length == allWords.length){
+                    // This was precalculated and provied massive speedup when using the ai
+                    return "lares";
+                }
+                else {
+                    return findBestWord(currentPossibleWords);
+                }
             }
         }
     }
@@ -291,27 +297,36 @@ public class WordleMaster {
 
     // Finds best words using eaxt search
     @NonNull
-    private String findBestWord(){
+    private String findBestWord(@NonNull String[] possibleWords){
 
         // Initall best word, and initilal best score
         String bestWord = null;
         float bestScore = Float.MAX_VALUE;
+        String worstWord = null;
+        float worstScore = Float.MIN_VALUE;
+
 
         // Find best word
         int count = 0;
         int total = allWords.length;
         for (String word: allWords) {
-            float socre = scoreWord(word, currentPossibleWords, 0);
+            float socre = scoreWord(word, possibleWords, 0);
             if (socre < bestScore){
                 bestScore = socre;
                 bestWord = word;
             }
+            else if (socre > worstScore){
+                worstScore = socre;
+                worstWord = word;
+            }
 
             count++;
-            System.out.println(String.format("%.5g%n", count * 100f / (float)total).trim() + "%" + " : " + count + "/" + total + " --- " + word + " : AR : " + socre);
+            System.out.println(String.format("%.5g%n", count * 100f / (float)total).trim() + "%" + " : " + count + "/" + total + " --- " + word + " : " + socre + " ARP");
         }
 
         // Returns best word
+        System.out.println("BEST: " + bestWord + " --- Score: " + bestScore + " ARP");
+        System.out.println("WORST: " + worstWord + " --- Score: " + worstScore + " ARP");
         return bestWord;
     }
 
