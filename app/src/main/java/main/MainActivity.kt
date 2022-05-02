@@ -1,4 +1,4 @@
-package com.example.wordlemaster
+package main
 
 import ai.Constraint
 import ai.SearchType
@@ -15,6 +15,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
+import com.example.wordlemaster.R
 import kotlinx.coroutines.*
 import kotlin.math.floor
 import kotlin.math.sqrt

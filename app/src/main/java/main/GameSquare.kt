@@ -1,4 +1,4 @@
-package com.example.wordlemaster
+package main
 
 import ai.ConstraintType
 import android.graphics.Color
