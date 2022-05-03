@@ -52,8 +52,9 @@ class MainActivity : AppCompatActivity() {
         wordleMaster = WordleMaster(readInputStream(applicationContext.resources.openRawResource(R.raw.wordle_words)).split("\n").toTypedArray())
         GlobalScope.launch(Dispatchers.Main) { genUI() }
 
-        //val intent: Intent = Intent(applicationContext, WordSearchProgressPopUpActivity::class.java)
-        //startActivity(intent)
+        val intent: Intent = Intent(applicationContext, WordSearchProgressPopUpActivity::class.java)
+        intent.putExtra("test", wordleMaster)
+        startActivity(intent)
     }
 
     // Generates UI
@@ -200,7 +201,7 @@ class MainActivity : AppCompatActivity() {
             // Updates current row
             currentRow++
             // Get recommended word
-            val word: String = wordleMaster!!.recomendWord(SearchType.slowExact)
+            val word: String = wordleMaster!!.recomendWord(SearchType.slowExact, false)!!
             // Displays recommended word
             for (i in 0 until rows[currentRow]?.size!!){
                 rows[currentRow]?.get(i)!!.char = word[i];

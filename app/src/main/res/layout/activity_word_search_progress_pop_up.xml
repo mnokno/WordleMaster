@@ -4,16 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/pop_up_background"
+    android:layout_gravity="center"
+    android:background="@color/transparent"
     tools:context="main.WordSearchProgressPopUpActivity">
 
     <TextView
-        android:id="@+id/testText"
-        android:layout_width="58dp"
-        android:layout_height="23dp"
-        android:text="testText"
+        android:id="@+id/mainText"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="@drawable/ic_launcher_background"
+        android:backgroundTint="#732727"
+        android:gravity="center"
+        android:text="Processing: 12.435%"
+        android:textSize="14sp"
+        app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25" />
 </androidx.constraintlayout.widget.ConstraintLayout>
