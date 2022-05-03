@@ -3,16 +3,16 @@ package main
 import ai.SearchType
 import ai.WordleMaster
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.TypedValue
 import android.widget.TextView
 import com.example.wordlemaster.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.sqrt
+
 
 class WordSearchProgressPopUpActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,25 +21,36 @@ class WordSearchProgressPopUpActivity : Activity() {
 
         val displayMetrics: DisplayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics);
-
         val width: Int = displayMetrics.widthPixels;
         val height: Int = displayMetrics.heightPixels;
 
-        //window.setLayout((width * 0.5).toInt(), (height * 0.5).toInt());
         val textView: TextView = findViewById(R.id.mainText);
         textView.height = (height * 0.1).toInt();
+        textView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM)
 
+        System.out.println("HEREHEREHEREHEREHERHERHERHEHRHERHHERHEHRHEHRHEHRHERHEHHR")
 
-        GlobalScope.launch(Dispatchers.Main) { test() }
+        GlobalScope.launch(Dispatchers.Main) { asyncWordProcessing() }
 
     }
 
-    public suspend fun test(){
+    private suspend fun asyncWordProcessing(){
 
-        val wordleMaster : WordleMaster = intent.getSerializableExtra("test") as WordleMaster
+        val wordleMaster : WordleMaster = intent.getSerializableExtra("wordleMaster") as WordleMaster
         wordleMaster.recomendWord(SearchType.slowExact, true)
         val textView: TextView = findViewById(R.id.mainText);
-        textView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM)
+
+        if (wordleMaster.taskPresentageCompletion == 1f){
+
+            //val data : String = wordleMaster.data
+            textView.text = "Processing: 100%"
+            val returnIntent = Intent()
+            returnIntent.putExtra("result", wordleMaster.result)
+            setResult(RESULT_OK, returnIntent)
+            delay(100)
+            finish()
+        }
+
 
         while (wordleMaster.taskPresentageCompletion != 1f){
             delay(100)
@@ -47,6 +58,9 @@ class WordSearchProgressPopUpActivity : Activity() {
             textView.text = "Processing: " + String.format("%.3g%n", wordleMaster.taskPresentageCompletion * 100).trim() + "%"
         }
 
+        val returnIntent = Intent()
+        returnIntent.putExtra("result", wordleMaster.result)
+        setResult(RESULT_OK, returnIntent)
         finish()
     }
 }

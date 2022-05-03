@@ -3,6 +3,7 @@ package main
 import ai.Constraint
 import ai.SearchType
 import ai.WordleMaster
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -15,6 +16,7 @@ import android.view.View
 
 import android.widget.Button
 import android.widget.LinearLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import com.example.wordlemaster.R
@@ -36,6 +38,18 @@ class MainActivity : AppCompatActivity() {
     private var rows: Array<Array<GameSquare?>?> = arrayOfNulls(6)
     private var currentRow: Int = -1;
 
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // There are no request codes
+            val data: Intent? = result.data
+            val word: String = data?.getStringExtra("result") ?: "error"
+            // Displays recommended word
+            for (i in 0 until rows[currentRow]?.size!!){
+                rows[currentRow]?.get(i)!!.char = word[i]
+            }
+        }
+    }
+
     ////////////////////////////
     /// Class initialization ///
     ////////////////////////////
@@ -51,10 +65,6 @@ class MainActivity : AppCompatActivity() {
 
         wordleMaster = WordleMaster(readInputStream(applicationContext.resources.openRawResource(R.raw.wordle_words)).split("\n").toTypedArray())
         GlobalScope.launch(Dispatchers.Main) { genUI() }
-
-        val intent: Intent = Intent(applicationContext, WordSearchProgressPopUpActivity::class.java)
-        intent.putExtra("test", wordleMaster)
-        startActivity(intent)
     }
 
     // Generates UI
@@ -200,12 +210,14 @@ class MainActivity : AppCompatActivity() {
 
             // Updates current row
             currentRow++
+
             // Get recommended word
-            val word: String = wordleMaster!!.recomendWord(SearchType.slowExact, false)!!
-            // Displays recommended word
-            for (i in 0 until rows[currentRow]?.size!!){
-                rows[currentRow]?.get(i)!!.char = word[i];
-            }
+            val intent: Intent = Intent(applicationContext, WordSearchProgressPopUpActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            intent.putExtra("wordleMaster", wordleMaster)
+            startActivity(intent)
+            resultLauncher.launch(intent)
+
         }
     }
 }

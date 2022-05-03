@@ -57,7 +57,7 @@ public class WordleMaster implements Serializable {
 
     // Retruns recomended word to guess
     @Nullable
-    public String recomendWord(@NonNull SearchType searchType, Boolean asynch){
+    public String recomendWord(@NonNull SearchType searchType, Boolean async){
 
         // Restes results and prgoress counter
         result = null;
@@ -68,11 +68,18 @@ public class WordleMaster implements Serializable {
 
         // Check weather the correct word has been found
         if (currentPossibleWords.length <= 2){
-            return currentPossibleWords[0];
+            if (async){
+                result = currentPossibleWords[0];
+                taskPresentageCompletion = 1;
+                return null;
+            }
+            else{
+                return currentPossibleWords[0];
+            }
         }
         else{
             if (searchType == SearchType.fastApproximation){
-                if (asynch){
+                if (async){
                     new Thread(() -> {
                         approximateBestWord(currentPossibleWords, currentConstraintGroup);
                     }).start();
@@ -83,8 +90,8 @@ public class WordleMaster implements Serializable {
                 }
             }
             else{
-                if (currentPossibleWords.length != allWords.length){
-                    if (asynch){
+                if (currentPossibleWords.length == allWords.length){
+                    if (async){
                         result = "lares";
                         taskPresentageCompletion = 1;
                         return null;
@@ -94,7 +101,7 @@ public class WordleMaster implements Serializable {
                     }
                 }
                 else {
-                    if (asynch){
+                    if (async){
                         new Thread(() -> {
                             findBestWord(currentPossibleWords);
                         }).start();
@@ -337,8 +344,9 @@ public class WordleMaster implements Serializable {
         result = bestWord;
         // Updates progress
         taskPresentageCompletion = 1;
-        //System.out.println("BEST: " + bestWord + " --- Score: " + bestScore + " ARP");
-        //System.out.println("WORST: " + worstWord + " --- Score: " + worstScore + " ARP");
+        // Logs results to the console
+        System.out.println("BEST: " + bestWord + " --- Score: " + bestScore + " ARP");
+        System.out.println("WORST: " + worstWord + " --- Score: " + worstScore + " ARP");
         // Returns best word
         return bestWord;
     }
