@@ -3,6 +3,8 @@ package main
 import ai.Constraint
 import ai.SearchType
 import ai.WordleMaster
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +19,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import com.example.wordlemaster.R
 import kotlinx.coroutines.*
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.nio.charset.StandardCharsets
 import kotlin.math.floor
 import kotlin.math.sqrt
 
@@ -43,9 +49,11 @@ class MainActivity : AppCompatActivity() {
             rows[i] = arrayOfNulls<GameSquare>(5);
         }
 
-        wordleMaster = WordleMaster(applicationContext)
+        wordleMaster = WordleMaster(readInputStream(applicationContext.resources.openRawResource(R.raw.wordle_words)).split("\n").toTypedArray())
         GlobalScope.launch(Dispatchers.Main) { genUI() }
 
+        //val intent: Intent = Intent(applicationContext, WordSearchProgressPopUpActivity::class.java)
+        //startActivity(intent)
     }
 
     // Generates UI
@@ -131,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         suggestButtonLayoutParams.setMargins(linearLayoutPaddingSideways + buttonMargin, 0, linearLayoutPaddingSideways + buttonMargin, 0)
         suggestButton.layoutParams = suggestButtonLayoutParams
         // Sets buttons text
-        suggestButton.text = "Recommend guess"
+        suggestButton.text = getString(R.string.recommend_button_text)
         // Sets on click event
         suggestButton.setOnClickListener {
             recommendMoveButton(suggestButton);
@@ -151,6 +159,21 @@ class MainActivity : AppCompatActivity() {
         //supportActionBar?.hide()
     }
 
+    // Converts an input stream to a string (reads the stream)
+    private fun readInputStream(inputStream: InputStream): String {
+        return try {
+            val result = ByteArrayOutputStream()
+            val buffer = ByteArray(1024)
+            var length: Int
+            while (inputStream.read(buffer).also { length = it } != -1) {
+                result.write(buffer, 0, length)
+            }
+            result.toString(StandardCharsets.UTF_8.name())
+        } catch (e: IOException) {
+            println(e)
+            ""
+        }
+    }
     //////////////////////
     /// Event handling ///
     //////////////////////

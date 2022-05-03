@@ -1,70 +1,38 @@
 package ai;
 
-import android.content.Context;
 import androidx.annotation.NonNull;
 import com.example.wordlemaster.R;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-public class WordleMaster {
+public class WordleMaster implements Serializable {
 
     ///////////////////////
     /// Class variables ///
     ///////////////////////
 
-    private Context context;
     private String[] allWords;
     private String[] currentPossibleWords;
     private ConstraintGroup currentConstraintGroup = new ConstraintGroup();
+    public String data;
 
     /////////////////////////
     /// Class constructor ///
     /////////////////////////
 
     // Constructoro
-    public WordleMaster(@NonNull Context context){
-        this.context = context;
-        popAllWordsArray();
+    public WordleMaster(String[] words){
+        allWords = words;
+        currentPossibleWords = words;
     }
 
     ///////////////////////////////
     /// Class support utilities ///
     ///////////////////////////////
-
-    // Populates allWords array
-    private void popAllWordsArray(){
-
-        // Reads text files
-        InputStream inputStreamWordsA = context.getResources().openRawResource(R.raw.wordle_words);
-        InputStream inputStreamWordsB = context.getResources().openRawResource(R.raw.wordle_words);
-        InputStream inputStreamFlattened = context.getResources().openRawResource(R.raw.wordle_words_flattened);
-
-        // Reads and converts into an array of strings
-        allWords = readInputStream(inputStreamWordsA).split("\n");
-        currentPossibleWords = readInputStream(inputStreamWordsB).split("\n");
-        //String[] wordsF = readInputStream(inputStreamFlattened).split("\n");
-
-    }
-
-    // Converts an input stream to a string (reads the stream)
-    @NonNull
-    private String readInputStream(@NonNull InputStream inputStream) {
-        try{
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            for (int length; (length = inputStream.read(buffer)) != -1; ) {
-                result.write(buffer, 0, length);
-            }
-            return result.toString(StandardCharsets.UTF_8.name());
-        }
-        catch (IOException e){
-            System.out.println(e);
-            return "";
-        }
-    }
 
     // Adds constraints
     public void addConstraints(@NonNull Constraint[] constraints){
@@ -103,7 +71,9 @@ public class WordleMaster {
             }
             else{
                 if (currentPossibleWords.length == allWords.length){
-                    // This was precalculated and provied massive speedup when using the ai
+                    //new Thread(() -> {
+                    //    // code goes here.
+                    //}).start();
                     return "lares";
                 }
                 else {

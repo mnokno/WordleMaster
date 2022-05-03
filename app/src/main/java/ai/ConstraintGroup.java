@@ -1,15 +1,17 @@
 package ai;
 
 import androidx.annotation.NonNull;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ConstraintGroup {
+public class ConstraintGroup implements Serializable {
 
     ///////////////////////
     /// Class variables ///
     ///////////////////////
-    private ArrayList<Constraint>[] constraints = (ArrayList<Constraint>[]) new ArrayList[3];
-    private ArrayList<Constraint>[] addedConstraints = (ArrayList<Constraint>[]) new ArrayList[3];
+    private final ArrayList<Constraint>[] constraints = (ArrayList<Constraint>[]) new ArrayList[3];
+    private final ArrayList<Constraint>[] addedConstraints = (ArrayList<Constraint>[]) new ArrayList[3];
 
     ////////////////////////////
     /// Class initialization ///

@@ -1,0 +1,22 @@
+package wordle;
+
+public class Wordle {
+
+    ///////////////////////
+    /// Class variables ///
+    ///////////////////////
+
+    ////////////////////////////
+    /// Class initialization ///
+    ////////////////////////////
+
+    // Constructor
+    public Wordle(){
+
+    }
+
+    ///////////////////////
+    /// Class utilities ///
+    ///////////////////////
+
+}

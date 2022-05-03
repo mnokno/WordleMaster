@@ -1,10 +1,11 @@
 package ai;
 
+import java.io.Serializable;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import java.util.Arrays;
 
-public class CharMap {
+public class CharMap implements Serializable{
 
     ///////////////////////
     /// Class variables ///
@@ -32,35 +33,32 @@ public class CharMap {
     ///////////////////////
 
     // Used to get value from map
-    @NonNull
-    public int get(@NonNull char c){
+    public int get(char c){
         return map[charToIndex(c)];
     }
 
     // Used to update value mapped to given character by 1
-    public void update(@NonNull char c){
+    public void update(char c){
         map[charToIndex(c)]++;
     }
 
     // Used to update value mapped to given character by val
-    public void update(@NonNull char c, @NonNull int val){
+    public void update(char c, @NonNull int val){
         map[charToIndex(c)] += val;
     }
 
     // Maps character to an index
-    @NonNull
-    private int charToIndex(@NonNull char c){
+    private int charToIndex(char c){
         return  (int)c - 97;
     }
 
     // Maps index to a character
-    @NonNull
-    private char indexToChar(@NonNull int index){
+    private char indexToChar(int index){
         return (char)(index + 97);
     }
 
     // Clamps this char map to a given set size
-    public void clampSet(@NonNull int setSize){
+    public void clampSet(int setSize){
         // Claculates midpoint
         int midPoint = (int)Math.floor(setSize / 2);
 

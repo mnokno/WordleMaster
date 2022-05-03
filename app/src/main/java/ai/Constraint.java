@@ -2,19 +2,22 @@ package ai;
 
 import androidx.annotation.NonNull;
 
-public class Constraint {
+import java.io.Serializable;
+
+public class Constraint implements Serializable {
 
     ///////////////////////
     /// Class variables ///
     ///////////////////////
-    private char constraintChar;
-    private ConstraintType constraintType;
-    private int position;
+
+    private final char constraintChar;
+    private final ConstraintType constraintType;
+    private final int position;
 
     ////////////////////////////
     /// Class initialization ///
     ////////////////////////////
-    public Constraint(@NonNull char constraintChar, @NonNull ConstraintType constraintType, @NonNull int position){
+    public Constraint(char constraintChar, @NonNull ConstraintType constraintType, int position){
         this.constraintChar = constraintChar;
         this.constraintType = constraintType;
         this.position = position;
@@ -23,17 +26,14 @@ public class Constraint {
     ///////////////////////
     /// Class utilities ///
     ///////////////////////
-    @NonNull
     public char getConstraintChar(){
         return constraintChar;
     }
 
-    @NonNull
     public ConstraintType getConstraintType(){
         return constraintType;
     }
 
-    @NonNull
     public int getPosition(){
         return position;
     }
