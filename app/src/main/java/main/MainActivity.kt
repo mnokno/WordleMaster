@@ -63,6 +63,9 @@ class MainActivity : AppCompatActivity() {
             rows[i] = arrayOfNulls<GameSquare>(5);
         }
 
+        val listA: Array<String> =  readInputStream(applicationContext.resources.openRawResource(R.raw.wordle_words)).split("\n").toTypedArray()
+        val listB: Array<String> =  readInputStream(applicationContext.resources.openRawResource(R.raw.wordle_words_possible_entries)).split("\n").toTypedArray()
+
         wordleMaster = WordleMaster(readInputStream(applicationContext.resources.openRawResource(R.raw.wordle_words)).split("\n").toTypedArray())
         GlobalScope.launch(Dispatchers.Main) { genUI() }
     }
