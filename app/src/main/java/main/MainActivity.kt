@@ -34,15 +34,13 @@ class MainActivity : AppCompatActivity() {
     /// Class variables ///
     ///////////////////////
 
-    private var wordleMaster: WordleMaster? = null
     private var rows: Array<Array<GameSquare?>?> = arrayOfNulls(6)
     private var currentRow: Int = -1;
 
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // There are no request codes
-            val data: Intent? = result.data
-            val word: String = data?.getStringExtra("result") ?: "error"
+            // Gets the recommended word
+            val word: String = WordleMaster.getResult() ?: "error"
             // Displays recommended word
             for (i in 0 until rows[currentRow]?.size!!){
                 rows[currentRow]?.get(i)!!.char = word[i]
@@ -63,10 +61,10 @@ class MainActivity : AppCompatActivity() {
             rows[i] = arrayOfNulls<GameSquare>(5);
         }
 
-        val listA: Array<String> =  readInputStream(applicationContext.resources.openRawResource(R.raw.wordle_words)).split("\n").toTypedArray()
-        val listB: Array<String> =  readInputStream(applicationContext.resources.openRawResource(R.raw.wordle_words_possible_entries)).split("\n").toTypedArray()
+        val possibleSolutions: Array<String> =  readInputStream(applicationContext.resources.openRawResource(R.raw.wordle_words_solutions)).split("\n").toTypedArray()
+        val possibleEntries: Array<String> =  readInputStream(applicationContext.resources.openRawResource(R.raw.wordle_words_possible_entries)).split("\n").toTypedArray()
 
-        wordleMaster = WordleMaster(readInputStream(applicationContext.resources.openRawResource(R.raw.wordle_words)).split("\n").toTypedArray())
+        WordleMaster.SetWordSets(possibleEntries, possibleSolutions)
         GlobalScope.launch(Dispatchers.Main) { genUI() }
     }
 
@@ -201,7 +199,7 @@ class MainActivity : AppCompatActivity() {
             if (currentRow != -1){
                 for (i in 0 until rows[currentRow]?.size!!){
                     val gameSquare: GameSquare = rows[currentRow]?.get(i)!!;
-                    wordleMaster!!.addConstraints(
+                    WordleMaster.addConstraints(
                         Constraint(
                             gameSquare.char,
                             gameSquare.constraintType,
@@ -215,12 +213,11 @@ class MainActivity : AppCompatActivity() {
             currentRow++
 
             // Get recommended word
+            WordleMaster.recomendWord(SearchType.slowExact, true)
             val intent: Intent = Intent(applicationContext, WordSearchProgressPopUpActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-            intent.putExtra("wordleMaster", wordleMaster)
             startActivity(intent)
             resultLauncher.launch(intent)
-
         }
     }
 }

@@ -6,29 +6,36 @@ import androidx.annotation.Nullable;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class WordleMaster implements Serializable {
+public final class WordleMaster implements Serializable {
 
     ///////////////////////
     /// Class variables ///
     ///////////////////////
 
-    private String[] allWords;
-    private String[] currentPossibleWords;
-    private ConstraintGroup currentConstraintGroup = new ConstraintGroup();
+    static private String[] possibleEntries;
+    static private String[] possibleEntriesLimited;
 
-    private float taskPresentageCompletion;
-    public float getTaskPresentageCompletion() { return taskPresentageCompletion; }
-    private String result;
-    public String getResult() { return result; }
+    static private String[] possibleSolusions;
+    static private String[] possibleSolusionsLimited;
+
+    static private ConstraintGroup currentConstraintGroup = new ConstraintGroup();
+
+    static private float taskPresentageCompletion;
+    static public float getTaskPresentageCompletion() { return taskPresentageCompletion; }
+
+    static private String result;
+    static public String getResult() { return result; }
 
     /////////////////////////
     /// Class constructor ///
     /////////////////////////
 
     // Constructoro
-    public WordleMaster(String[] words){
-        allWords = words;
-        currentPossibleWords = words;
+    public static void SetWordSets(String[] entries, String[] solusions){
+        possibleEntries = entries;
+        possibleEntriesLimited = entries;
+        possibleSolusions = solusions;
+        possibleSolusionsLimited = solusions;
     }
 
     ///////////////////////////////
@@ -36,17 +43,17 @@ public class WordleMaster implements Serializable {
     ///////////////////////////////
 
     // Adds constraints
-    public void addConstraints(@NonNull Constraint[] constraints){
+    public static void addConstraints(@NonNull Constraint[] constraints){
         currentConstraintGroup.addConstraints(constraints);
     }
 
     // Adds constraint
-    public void addConstraints(@NonNull Constraint constraint){
+    public static void addConstraints(@NonNull Constraint constraint){
         addConstraints(new Constraint[]{constraint});
     }
 
     // Sets constraints
-    public void setConstraints(@NonNull Constraint[] constraints){
+    public static void setConstraints(@NonNull Constraint[] constraints){
         currentConstraintGroup.clear();
         currentConstraintGroup.addConstraints(constraints);
     }
@@ -57,40 +64,41 @@ public class WordleMaster implements Serializable {
 
     // Retruns recomended word to guess
     @Nullable
-    public String recomendWord(@NonNull SearchType searchType, Boolean async){
+    public static String recomendWord(@NonNull SearchType searchType, Boolean async){
 
         // Restes results and prgoress counter
         result = null;
         taskPresentageCompletion = 0;
 
         // Recalculates possible moves
-        currentPossibleWords = calculatePossibleWords(currentPossibleWords, currentConstraintGroup);
+        possibleEntriesLimited = calculatePossibleWords(possibleEntriesLimited, currentConstraintGroup);
+        possibleSolusionsLimited = calculatePossibleWords(possibleSolusionsLimited, currentConstraintGroup);
 
         // Check weather the correct word has been found
-        if (currentPossibleWords.length <= 2){
+        if (possibleEntriesLimited.length <= 2){
             if (async){
-                result = currentPossibleWords[0];
+                result = possibleEntriesLimited[0];
                 taskPresentageCompletion = 1;
                 return null;
             }
             else{
-                return currentPossibleWords[0];
+                return possibleEntriesLimited[0];
             }
         }
         else{
             if (searchType == SearchType.fastApproximation){
                 if (async){
                     new Thread(() -> {
-                        approximateBestWord(currentPossibleWords, currentConstraintGroup);
+                        approximateBestWord(possibleEntriesLimited, currentConstraintGroup);
                     }).start();
                     return null;
                 }
                 else{
-                    return approximateBestWord(currentPossibleWords, currentConstraintGroup);
+                    return approximateBestWord(possibleEntriesLimited, currentConstraintGroup);
                 }
             }
             else{
-                if (currentPossibleWords.length == allWords.length){
+                if (possibleEntriesLimited.length == possibleEntries.length){
                     if (async){
                         result = "lares";
                         taskPresentageCompletion = 1;
@@ -103,12 +111,12 @@ public class WordleMaster implements Serializable {
                 else {
                     if (async){
                         new Thread(() -> {
-                            findBestWord(currentPossibleWords);
+                            findBestWord(possibleEntriesLimited);
                         }).start();
                         return null;
                     }
                     else{
-                        return findBestWord(currentPossibleWords);
+                        return findBestWord(possibleEntriesLimited);
                     }
                 }
             }
@@ -117,7 +125,7 @@ public class WordleMaster implements Serializable {
 
     // Calculates possible words based on the constraints
     @NonNull
-    private String[] calculatePossibleWords(@NonNull String[] possibleWords, @NonNull ConstraintGroup constraintGroup){
+    private static String[] calculatePossibleWords(@NonNull String[] possibleWords, @NonNull ConstraintGroup constraintGroup){
 
         // Creates a list for stroing valid words
         ArrayList<String> validWords = new ArrayList<String>();
@@ -142,7 +150,7 @@ public class WordleMaster implements Serializable {
 
     // Calculates possible words based on the constraint
     @NonNull
-    private String[] calculatePossibleWords(@NonNull String[] possibleWords, @NonNull Constraint constraint){
+    private static String[] calculatePossibleWords(@NonNull String[] possibleWords, @NonNull Constraint constraint){
         // Creats new constraint group
         ConstraintGroup constraintGroup = new ConstraintGroup();
         constraintGroup.addConstraint(constraint);
@@ -152,7 +160,7 @@ public class WordleMaster implements Serializable {
 
     // Return true if given word is valid withiin given constraints
     @NonNull
-    private boolean isValid(@NonNull String word, @NonNull Constraint[] inWordInCorrrectPlace, @NonNull Constraint[] inWordWrongPlace, @NonNull Constraint[] notInWord){
+    private static boolean isValid(@NonNull String word, @NonNull Constraint[] inWordInCorrrectPlace, @NonNull Constraint[] inWordWrongPlace, @NonNull Constraint[] notInWord){
 
         // For letter in specific place constraint
         for (Constraint constraint: inWordInCorrrectPlace) {
@@ -189,7 +197,7 @@ public class WordleMaster implements Serializable {
 
     // Returns best word using fast aroximation search
     @NonNull
-    private String approximateBestWord(@NonNull String[] possibleWords, @NonNull ConstraintGroup constraintGroup){
+    private static String approximateBestWord(@NonNull String[] possibleWords, @NonNull ConstraintGroup constraintGroup){
         // Calculates charmap
         CharMap charMap = countLetters(possibleWords);
         // Clamps the charm map
@@ -202,15 +210,15 @@ public class WordleMaster implements Serializable {
         // Initiates counter
         int count = 0;
         // Find best word
-        for (int i = 0; i < allWords.length; i++){
-            int currentScore = scoreWord(allWords[i], charMap, constraintGroup);
+        for (int i = 0; i < possibleEntries.length; i++){
+            int currentScore = scoreWord(possibleEntries[i], charMap, constraintGroup);
             if (currentScore > bestScore){
                 bestScore = currentScore;
-                bestWord = allWords[i];
+                bestWord = possibleEntries[i];
             }
 
             // Updates tasks progress
-            taskPresentageCompletion = count / (float)allWords.length;
+            taskPresentageCompletion = count / (float) possibleEntries.length;
             // Updates counter
             count++;
         }
@@ -225,7 +233,7 @@ public class WordleMaster implements Serializable {
 
     // Retruns score for a word based on the suplied CharMap
     @NonNull
-    private int scoreWord(@NonNull String word, @NonNull CharMap charMap, @NonNull ConstraintGroup constraintGroup){
+    private static int scoreWord(@NonNull String word, @NonNull CharMap charMap, @NonNull ConstraintGroup constraintGroup){
 
         // Creat initial score
         int score = 0;
@@ -286,7 +294,7 @@ public class WordleMaster implements Serializable {
 
     // Counts accurance of each letter in suplided list of words, words most be flattend, ducilated letters in a word are't coutned
     @NonNull
-    private CharMap countLetters(@NonNull String[] words){
+    private static CharMap countLetters(@NonNull String[] words){
         // Creates an empty hash map
         CharMap charMap = new CharMap();
 
@@ -310,7 +318,7 @@ public class WordleMaster implements Serializable {
 
     // Finds best words using eaxt search
     @NonNull
-    private String findBestWord(@NonNull String[] possibleWords){
+    private static String findBestWord(@NonNull String[] possibleWords){
 
         // Initall best word, and initilal best score
         String bestWord = null;
@@ -321,8 +329,8 @@ public class WordleMaster implements Serializable {
         // Initiates counter
         int count = 0;
         // Find best word
-        for (String word: allWords) {
-            float socre = scoreWord(word, possibleWords, 0);
+        for (String word: possibleEntries) {
+            float socre = scoreWord(word, possibleEntries, 0);
             if (socre < bestScore){
                 bestScore = socre;
                 bestWord = word;
@@ -333,11 +341,11 @@ public class WordleMaster implements Serializable {
             }
 
             // Updates tasks progress
-            taskPresentageCompletion = count / (float)allWords.length;
+            taskPresentageCompletion = count / (float) possibleEntries.length;
             // Updates counter
             count++;
             // Console progress log
-            System.out.println(String.format("%.5g%n", count * 100f / (float)allWords.length).trim() + "%" + " : " + count + "/" + allWords.length + " --- " + word + " : " + socre + " ARP");
+            System.out.println(String.format("%.5g%n", count * 100f / (float) possibleEntries.length).trim() + "%" + " : " + count + "/" + possibleEntries.length + " --- " + word + " : " + socre + " ARP");
         }
 
         // Updates result
@@ -353,7 +361,7 @@ public class WordleMaster implements Serializable {
 
     // Returns a socre for a word using a precise technique, takes much longer then quick approximation technique
     @NonNull
-    private float scoreWord(@NonNull String word, @NonNull String[] possibleWords, @NonNull int currentPos){
+    private static float scoreWord(@NonNull String word, @NonNull String[] possibleWords, @NonNull int currentPos){
 
         // Checks if there are any possible words
         if (possibleWords.length == 0){
