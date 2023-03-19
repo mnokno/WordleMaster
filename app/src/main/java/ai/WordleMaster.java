@@ -30,12 +30,25 @@ public final class WordleMaster implements Serializable {
     /// Class constructor ///
     /////////////////////////
 
-    // Constructoro
+    // Constructor
     public static void SetWordSets(String[] entries, String[] solusions){
         possibleEntries = entries;
         possibleEntriesLimited = entries;
         possibleSolusions = solusions;
         possibleSolusionsLimited = solusions;
+
+        removeSixthCharacter(entries);
+        removeSixthCharacter(solusions);
+    }
+
+    private static void removeSixthCharacter(String[] words){
+        for (int i = 0; i < words.length; i++){
+            if (words[i].length() != 5){
+                System.out.println("Expected length 5, but got word: '"
+                        + words[i] + "' with length " + words[i].length());
+                words[i] = words[i].trim();
+            }
+        }
     }
 
     ///////////////////////////////
@@ -73,6 +86,8 @@ public final class WordleMaster implements Serializable {
         // Recalculates possible moves
         possibleEntriesLimited = calculatePossibleWords(possibleEntriesLimited, currentConstraintGroup);
         possibleSolusionsLimited = calculatePossibleWords(possibleSolusionsLimited, currentConstraintGroup);
+        possibleEntriesLimited = possibleSolusionsLimited;
+        System.out.println(possibleEntriesLimited.length + " " + possibleSolusionsLimited.length);
 
         // Check weather the correct word has been found
         if (possibleEntriesLimited.length <= 2){
@@ -111,12 +126,12 @@ public final class WordleMaster implements Serializable {
                 else {
                     if (async){
                         new Thread(() -> {
-                            findBestWord(possibleEntriesLimited);
+                            findBestWord(possibleEntriesLimited, possibleEntriesLimited);
                         }).start();
                         return null;
                     }
                     else{
-                        return findBestWord(possibleEntriesLimited);
+                        return findBestWord(possibleEntriesLimited, possibleEntriesLimited);
                     }
                 }
             }
@@ -318,7 +333,7 @@ public final class WordleMaster implements Serializable {
 
     // Finds best words using eaxt search
     @NonNull
-    private static String findBestWord(@NonNull String[] possibleWords){
+    private static String findBestWord(@NonNull String[] possibleWords, @NonNull String[] possibleSolusionWords){
 
         // Initall best word, and initilal best score
         String bestWord = null;
@@ -329,8 +344,8 @@ public final class WordleMaster implements Serializable {
         // Initiates counter
         int count = 0;
         // Find best word
-        for (String word: possibleEntries) {
-            float socre = scoreWord(word, possibleEntries, 0);
+        for (String word: possibleWords) {
+            float socre = scoreWord(word, possibleSolusionWords, 0);
             if (socre < bestScore){
                 bestScore = socre;
                 bestWord = word;
@@ -341,11 +356,11 @@ public final class WordleMaster implements Serializable {
             }
 
             // Updates tasks progress
-            taskPresentageCompletion = count / (float) possibleEntries.length;
+            taskPresentageCompletion = count / (float) possibleWords.length;
             // Updates counter
             count++;
             // Console progress log
-            System.out.println(String.format("%.5g%n", count * 100f / (float) possibleEntries.length).trim() + "%" + " : " + count + "/" + possibleEntries.length + " --- " + word + " : " + socre + " ARP");
+            //System.out.println(String.format("%.5g%n", count * 100f / (float) possibleEntries.length).trim() + "%" + " : " + count + "/" + possibleEntries.length + " --- " + word + " : " + socre + " ARP");
         }
 
         // Updates result
